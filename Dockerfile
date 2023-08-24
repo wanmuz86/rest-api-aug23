@@ -35,8 +35,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN composer install
 RUN php artisan migrate --force
-RUN php artisan passport:install
-RUN php artisan jwt:secret
 
 CMD ["php","artisan","serve","--host=0.0.0.0"]
 
