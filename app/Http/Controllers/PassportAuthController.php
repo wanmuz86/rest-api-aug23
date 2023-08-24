@@ -34,11 +34,17 @@ class PassportAuthController extends Controller
 
     public function login(Request $request)
     {
+        try {
         $credentials = $request->only('email', 'password');
         if (! $token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return response()->json(['token' => $token], 200);
+
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Login failed ' . $e], 500);
+    }
     }
 
 
