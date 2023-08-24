@@ -33,7 +33,10 @@ public function store(Request $request){
 }
 // Read All
 public function index(){
-    $places = Place::all();
+    // SELECT * FROM places;
+    // $places = Place::all();
+    // SELECT name, address, image_url FROM places;
+    $places = Place::select('id','name','address','image_url')->get();
     if ($places){
         return response()->json([
             "success"=>true,

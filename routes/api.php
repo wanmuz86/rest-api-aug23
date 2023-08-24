@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\PassportAuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,6 +18,21 @@ use App\Http\Controllers\PlaceController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Routes protected by auth:sanctum middleware
+Route::middleware('jwt.auth')->group(function () {
+
+
+    // Create
+    Route::post('/places',[PlaceController::class,'store']);
+   
+    Route::put('/places/{id}',[PlaceController::class, 'update']);
+    // Delete
+    Route::delete('/places/{id}',[PlaceController::class, 'delete']);
+
+});
+
+    
 // http://places-api.test/api/hello
 Route::get('/hello',function(){
     return "Hello World";
@@ -31,10 +47,14 @@ Route::post('/info', function(Request $request){
 });
 
 //use App\Http\Controllers\PlaceController;
-Route::post('/places',[PlaceController::class,'store']);
+
 
 Route::get('/places',[PlaceController::class,'index']);
 Route::get('/places/{id}',[PlaceController::class,'show']);
 
-Route::put('/places/{id}',[PlaceController::class, 'update']);
-Route::delete('/places/{id}',[PlaceController::class, 'delete']);
+
+
+
+
+Route::post('/register', [PassportAuthController::class, 'register']);
+Route::post('/login', [PassportAuthController::class, 'login']);
