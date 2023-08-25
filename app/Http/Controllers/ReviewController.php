@@ -2,47 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use ErrorException;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\Review;
 use App\Models\Place;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 class ReviewController extends Controller
 {
     //
 
-    public function store(Request $request,$id){
-
+    public function store(Request $request, $placeId){
+        
         try {
-        $user = JWTAuth::parseToken()->authenticate();
-        $userId = $user->id;
+            $place = Place::find($placeId);
+            $place["avg_rating"] = ($place["avg_rating"]
+             * count($place["reviews"]) + $request->rating) /
+             (count($place["reviews"])+ 1);
 
-        $place = Place::with('reviews')->where('id',$id)->first();
-      
-        $place["avg_rating"]= ($place["avg_rating"]* count($place["reviews"]) + $request->rating) / ( count($place["reviews"]) +1);
-       
+             //use Tymon\JWTAuth\Facades\JWTAuth;
+
+             $user= JWTAuth::parseToken()->authenticate();
+             $userId = $user->id;
+/// This should be done inside a DB Transaction
+
+// start transaction
         Review::create([
-            "user_id"=>$userId,
-            "place_id"=>$id,
             "rating"=>$request->rating,
+            "user_id"=>$userId,
+            "place_id"=>$placeId,
             "comments"=>$request->comments
         ]);
 
         $place->save();
-        return response()->json(["message"=>"Review successfully added",
-        "success"=>true
-    ]);
-}
-catch (\Exception $e) {
-    return response()->json(['error' => 'Add review failed ' . $e], 500);
-}
-
-        
-
-      
+        /// commit transaction
 
 
+
+       return  response()->json(["success"=>true, 
+        "message"=>"Review successfully added"]);
+    }
+    catch (\Exception $e){
+        return response()->json(['error' => 'Add Review failed ' . $e], 500);
+        // rollback transaction
 
 
     }
+
+    }
+
+    
 }

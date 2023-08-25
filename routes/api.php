@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlaceController;
@@ -29,6 +30,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::put('/places/{id}',[PlaceController::class, 'update']);
     // Delete
     Route::delete('/places/{id}',[PlaceController::class, 'delete']);
+
+    Route::post('/places/{placeId}/reviews',[ReviewController::class,'store']);
 
 });
 
